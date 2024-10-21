@@ -3,27 +3,20 @@ import json
 
 from openai import OpenAI
 from loguru import logger
-from pydantic import BaseModel
 from dotenv import load_dotenv
 
-from src.services.data_structures import Content, CandidateLevel
+from src.services.data_structures import CandidateLevel, AnalysisReport, RepoFilesResponse, Content
 
 load_dotenv()
-
-
-class AnalysisReport(BaseModel):
-    project_files: list[str]
-    full_report: str
-    conclusion_and_assessment: str
 
 
 class GPTCandidateAnalyzer:
     __CLIENT = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    def __init__(self, file_contents: list[Content], candidate_level: CandidateLevel, assignment_description: str):
-        self.__files_contents: list[Content] = file_contents
-        self.__candidate_level: CandidateLevel = candidate_level
-        self.__assignment_description: str = assignment_description
+    def __init__(self, file_contents: RepoFilesResponse, candidate_level: CandidateLevel, assignment_description: str):
+        self.__files_contents = file_contents.files
+        self.__candidate_level = candidate_level
+        self.__assignment_description = assignment_description
 
         self.file_analysis_parts: list[str] = []
         self.project_files: list[str] = []
@@ -84,9 +77,13 @@ class GPTCandidateAnalyzer:
             self.project_files.append(content.filename)
             logger.info(f"Analyzing file: {content.filename}")
 
-            total_parts = len(content.file_parts)
+            split_file_content = [
+                content.file_content[i:i + 7000] for i in range(0, len(content.file_content), 7000)
+            ]
 
-            for part_index, part in enumerate(content.file_parts, start=1):
+            total_parts = len(split_file_content)
+
+            for part_index, part in enumerate(split_file_content, start=1):
                 logger.debug(f"Sending part {part_index} of file {content.filename} for analysis")
 
                 try:
