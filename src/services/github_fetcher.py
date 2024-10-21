@@ -20,7 +20,7 @@ def get_repository_files(repo_url: str) -> RepoFilesResponse:
         # Extract owner and repository name from URL
         parts = repo_url.split("/")
         if len(parts) < 5 or parts[2] != "github.com":
-            raise ValueError("Invalid GitHub repository URL")
+            raise HTTPException(status_code=404, detail="Invalid GitHub repository URL")
 
         owner = parts[3]
         repo_name = parts[4]
@@ -41,6 +41,7 @@ def get_repository_files(repo_url: str) -> RepoFilesResponse:
                         logger.debug(f"Fetching file: {content.path}")
                         decoded_content = content.decoded_content.decode('utf-8')
                         file_contents.append(Content(filename=content.path, file_content=decoded_content))
+
                     except Exception as ex:
                         logger.error(f"Error decoding file {content.path}: {ex}")
 
