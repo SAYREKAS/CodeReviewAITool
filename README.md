@@ -45,8 +45,6 @@ touch docker-compose.yml
 Open the docker-compose.yml file and insert the following configuration:
 
 ```bash
-version: '3.9'
-
 services:
   app:
     build:
