@@ -77,8 +77,8 @@ docker compose up --build -d
 
 This command:
 
-	•	--build: forces the images to be built, even if they already exist.
-	•	-d: runs the containers in detached mode, allowing you to continue using the terminal.
+ - --build: forces the images to be built, even if they already exist.
+ - -d: runs the containers in detached mode, allowing you to continue using the terminal.
 
 ### 4. Check Logs (Optional)
 
@@ -104,5 +104,5 @@ docker compose down
 
 ## Additional Notes
 
-	•	If port 8001 is already in use, you can choose another port by modifying the ports section in the docker-compose.yml file. For example, change "8001:8000" to "8888:8000" to use port 8888 on your computer.
-	•	Make sure that Redis is running correctly. If you encounter issues with the application, check the Redis logs for more information.
+ - If port 8001 is already in use, you can choose another port by modifying the ports section in the docker-compose.yml file. For example, change "8001:8000" to "8888:8000" to use port 8888 on your computer.
+ - Make sure that Redis is running correctly. If you encounter issues with the application, check the Redis logs for more information.
