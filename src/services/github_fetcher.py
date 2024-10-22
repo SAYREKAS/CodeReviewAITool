@@ -30,17 +30,18 @@ def get_repository_files(repo_url: str) -> RepoFilesResponse:
 
         file_contents: list[Content] = []
 
-        def get_files_in_directory(contents):
+        def get_files_in_directory(contents, current_path=""):
             """Recursive function to traverse repository directories"""
             for content in contents:
                 if content.type == "dir":
                     logger.debug(f"Traversing directory: {content.path}")
-                    get_files_in_directory(repo.get_contents(content.path))
+                    get_files_in_directory(repo.get_contents(content.path), current_path + content.name + "/")
                 else:
                     try:
-                        logger.debug(f"Fetching file: {content.path}")
+                        full_path = current_path + content.name
+                        logger.debug(f"Fetching file: {full_path}")
                         decoded_content = content.decoded_content.decode('utf-8')
-                        file_contents.append(Content(filename=content.path, file_content=decoded_content))
+                        file_contents.append(Content(filename=full_path, file_content=decoded_content))
 
                     except Exception as ex:
                         logger.error(f"Error decoding file {content.path}: {ex}")
