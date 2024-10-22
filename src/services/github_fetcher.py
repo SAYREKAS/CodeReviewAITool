@@ -1,9 +1,9 @@
 import os
 
-from fastapi import HTTPException
-from github import Auth, Github
 from loguru import logger
 from dotenv import load_dotenv
+from github import Auth, Github
+from fastapi import HTTPException
 
 from src.services.data_structures import RepoFilesResponse, Content
 
@@ -14,6 +14,18 @@ g = Github(auth=auth)
 
 
 def get_repository_files(repo_url: str) -> RepoFilesResponse:
+    """
+    Fetches files from a specified GitHub repository.
+
+    Args:
+        repo_url (str): The URL of the GitHub repository.
+
+    Returns:
+        RepoFilesResponse: A response object containing the list of files and their count.
+
+    Raises:
+        HTTPException: If the repository URL is invalid or if an error occurs during file retrieval.
+    """
     try:
         logger.info(f"Fetching files from repository: {repo_url}")
 
@@ -31,7 +43,15 @@ def get_repository_files(repo_url: str) -> RepoFilesResponse:
         file_contents: list[Content] = []
 
         def get_files_in_directory(contents, current_path="", depth=0, max_depth=100):
-            """Recursive function to traverse repository directories with depth control"""
+            """
+            Recursive function to traverse repository directories with depth control.
+
+            Args:
+                contents: The contents of the current directory.
+                current_path (str): The path of the current directory being traversed.
+                depth (int): The current depth of recursion.
+                max_depth (int): The maximum allowed recursion depth.
+            """
             if depth > max_depth:
                 logger.error(f"Maximum recursion depth {max_depth} reached at {current_path}")
                 return

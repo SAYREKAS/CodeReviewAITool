@@ -15,6 +15,17 @@ class GPTCandidateAnalyzer:
     __CLIENT = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     def __init__(self, file_contents: RepoFilesResponse, candidate_level: CandidateLevel, assignment_description: str):
+        """
+        Initializes the GPTCandidateAnalyzer with file contents, candidate level, and assignment description.
+
+        Args:
+            file_contents (RepoFilesResponse): The contents of the repository files to analyze.
+            candidate_level (CandidateLevel): The level of the candidate (e.g., junior, middle, senior).
+            assignment_description (str): A description of the assignment for context in analysis.
+
+        Raises:
+            HTTPException: If the file contents are missing.
+        """
         if not file_contents.files:
             raise HTTPException(status_code=400, detail="The file content is missing. Please check the repository URL.")
 
@@ -30,6 +41,19 @@ class GPTCandidateAnalyzer:
         self.__start()
 
     def __gpt_api_response(self, prompt: str, model: str = "gpt-4-turbo") -> str:
+        """
+        Sends a prompt to the GPT model and retrieves the response.
+
+        Args:
+            prompt (str): The prompt to send to the GPT model.
+            model (str): The model to use for the request (default is "gpt-4-turbo").
+
+        Returns:
+            str: The content of the GPT response.
+
+        Raises:
+            HTTPException: If an error occurs during the API call.
+        """
         try:
             response = self.__CLIENT.chat.completions.create(
                 model=model,
@@ -45,6 +69,21 @@ class GPTCandidateAnalyzer:
             raise HTTPException(status_code=500, detail="An internal error occurred while processing the analysis.")
 
     def __analyze_file_part(self, content: Content, part: str, part_index: int, total_parts: int) -> str:
+        """
+        Analyzes a specific part of a file and generates a prompt for GPT.
+
+        Args:
+            content (Content): The content of the file being analyzed.
+            part (str): The part of the file content to analyze.
+            part_index (int): The index of the part being analyzed.
+            total_parts (int): The total number of parts in the file.
+
+        Returns:
+            str: The analysis result from GPT.
+
+        Raises:
+            HTTPException: If an error occurs during the analysis.
+        """
         if total_parts == 1:
             prompt = f"""
             {self.__assignment_description}\n\n
@@ -64,6 +103,18 @@ class GPTCandidateAnalyzer:
 
     @staticmethod
     def __parse_json_response(response: str) -> dict:
+        """
+        Parses the JSON response from GPT.
+
+        Args:
+            response (str): The string response to parse.
+
+        Returns:
+            dict: The parsed JSON data.
+
+        Raises:
+            HTTPException: If JSON parsing fails.
+        """
         try:
             json_data = json.loads(response)
             return json_data
@@ -73,6 +124,12 @@ class GPTCandidateAnalyzer:
             raise HTTPException(status_code=422, detail="The analysis could not be completed. Please try again.")
 
     def __analyze_files(self) -> None:
+        """
+        Analyzes all files provided in the file contents, sending each part to GPT for evaluation.
+
+        Raises:
+            HTTPException: If no files are available for analysis or if an error occurs during analysis.
+        """
         if not self.__files_contents:
             raise HTTPException(status_code=404, detail="No files available for analysis. Please check the repository.")
 
@@ -105,6 +162,12 @@ class GPTCandidateAnalyzer:
         logger.info("File analysis completed.")
 
     def __generate_final_report(self) -> None:
+        """
+        Generates a final report based on the analysis of all file parts.
+
+        Raises:
+            HTTPException: If an error occurs while generating the final report.
+        """
         full_report = "\n\n".join(self.file_analysis_parts)
         prompt = f"""
         Please analyze the following code and provide a structured report in JSON format with the following fields:
@@ -132,5 +195,8 @@ class GPTCandidateAnalyzer:
             raise HTTPException(status_code=500, detail="An error occurred while generating the final report.")
 
     def __start(self) -> None:
+        """
+        Initiates the analysis process by analyzing files and generating the final report.
+        """
         self.__analyze_files()
         self.__generate_final_report()
