@@ -1,59 +1,101 @@
-
 # Instructions for Running the Dockerized Application
 
-This document provides instructions on how to build and run the application using Docker.
+---
+This document provides instructions on how to build and run the application using Docker Compose.
 
 ## Prerequisites
 
-- Docker must be installed on your system.
-- You need to have your `GITHUB_ACCESS_TOKEN` and `OPENAI_API_KEY` available.
+---
+ - Ensure that Docker and Docker Compose are installed on your system.
+ - You will need your GITHUB_ACCESS_TOKEN and OPENAI_API_KEY.
 
 ## Instructions
 
+---
 ### 1. Clone the Repository
 
-Clone the repository to your local machine:
+Open a terminal (or command prompt), and execute the following command to clone the repository to your local machine:
 
 ```bash
 git clone https://github.com/SAYREKAS/CodeReviewAITool.git
+````
+
+Navigate to the directory of the cloned repository:
+
+```bash
 cd CodeReviewAITool
-```
+````
 
-### 2. Build the Docker Image
-
-Navigate to the project directory where your Dockerfile is located and build the Docker image:
-
-```bash
-docker build . -t code_review_ai_tool
-```
-
-### 3. Run the Docker Container
-
-Start the Docker container with the required environment variables:
+### 2. Docker Compose Configuration
+In this directory, create a new file named docker-compose.yml. You can use a text editor such as nano, vim, or any graphical text editor:
 
 ```bash
-docker run -e GITHUB_ACCESS_TOKEN='your_token' -e OPENAI_API_KEY='your_api_key' -p 8000:8000 --name code_review_ai_tool_container -d code_review_ai_tool
-```
+touch docker-compose.yml
+````
+
+Open the docker-compose.yml file and insert the following configuration:
+
+```bash
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - GITHUB_ACCESS_TOKEN=<your_github_access_token>
+      - OPENAI_API_KEY=<your_openai_api_key>
+
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+````
+
+Note: Be sure to replace <your_github_access_token> and <your_openai_api_key> with your actual values.
+
+### 3. Build and Run the Docker Containers
+
+To start the containers, use the command:
+
+```bash
+docker compose up --build -d
+````
+
+This command:
+
+	•	--build: forces the images to be built, even if they already exist.
+	•	-d: runs the containers in detached mode, allowing you to continue using the terminal.
 
 ### 4. Check Logs (Optional)
 
-To view the logs of the running container, use the following command:
+To view the logs of the running application container, use the following command:
 
 ```bash
-docker logs -f code_review_ai_tool_container
-```
+docker compose logs -f
+````
 
 ### 5. Access the Application
 
-You can access the application in your web browser at:
+You can access your application through your web browser at:
 
-[http://localhost:8000](http://localhost:8000)
+http://localhost:8001
 
-## Notes
+### 6. Stop Docker Containers (Optional)
 
-- Make sure to replace `your_token` and `your_api_key` with your actual API keys.
-- If port 8000 is already in use, you can choose another port by modifying the `-p` option in the `docker run` command. For example:
-  ```bash
-  docker run -p 8888:8000 code_review_ai_tool_container
-  ```
-  Here, port `8888` on your computer will be forwarded to port `8000` inside the container.
+You can stop all Docker containers for the current project by entering the following command:
+
+```bash
+docker compose down
+````
+
+## Additional Notes
+
+	•	If port 8001 is already in use, you can choose another port by modifying the ports section in the docker-compose.yml file. For example, change "8001:8000" to "8888:8000" to use port 8888 on your computer.
+	•	Make sure that Redis is running correctly. If you encounter issues with the application, check the Redis logs for more information.
