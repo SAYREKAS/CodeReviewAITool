@@ -30,12 +30,18 @@ def get_repository_files(repo_url: str) -> RepoFilesResponse:
 
         file_contents: list[Content] = []
 
-        def get_files_in_directory(contents, current_path=""):
-            """Recursive function to traverse repository directories"""
+        def get_files_in_directory(contents, current_path="", depth=0, max_depth=100):
+            """Recursive function to traverse repository directories with depth control"""
+            if depth > max_depth:
+                logger.error(f"Maximum recursion depth {max_depth} reached at {current_path}")
+                return
+
             for content in contents:
                 if content.type == "dir":
                     logger.debug(f"Traversing directory: {content.path}")
-                    get_files_in_directory(repo.get_contents(content.path), current_path + content.name + "/")
+                    get_files_in_directory(
+                        repo.get_contents(content.path), current_path + content.name + "/", depth + 1, max_depth
+                    )
                 else:
                     try:
                         full_path = current_path + content.name
