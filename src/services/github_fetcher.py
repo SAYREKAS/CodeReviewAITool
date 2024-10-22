@@ -9,6 +9,9 @@ from src.services.data_structures import RepoFilesResponse, Content
 
 load_dotenv()
 
+logger.remove()
+logger.add(sink=lambda msg: print(msg, end=""), colorize=True)
+
 auth = Auth.Token(os.getenv('GITHUB_ACCESS_TOKEN'))
 g = Github(auth=auth)
 
