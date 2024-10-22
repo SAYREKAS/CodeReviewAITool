@@ -4,6 +4,7 @@ import json
 from openai import OpenAI
 from loguru import logger
 from dotenv import load_dotenv
+from fastapi import HTTPException
 
 from src.services.data_structures import CandidateLevel, AnalysisReport, RepoFilesResponse, Content
 
@@ -14,6 +15,9 @@ class GPTCandidateAnalyzer:
     __CLIENT = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     def __init__(self, file_contents: RepoFilesResponse, candidate_level: CandidateLevel, assignment_description: str):
+        if not file_contents.files:
+            raise HTTPException(status_code=400, detail="The file content is missing. Please check the repository URL.")
+
         self.__files_contents = file_contents.files
         self.__candidate_level = candidate_level
         self.__assignment_description = assignment_description
@@ -38,7 +42,7 @@ class GPTCandidateAnalyzer:
 
         except Exception as e:
             logger.error(f"Error during GPT analysis: {e}")
-            raise
+            raise HTTPException(status_code=500, detail="An internal error occurred while processing the analysis.")
 
     def __analyze_file_part(self, content: Content, part: str, part_index: int, total_parts: int) -> str:
         if total_parts == 1:
@@ -66,13 +70,12 @@ class GPTCandidateAnalyzer:
 
         except json.JSONDecodeError as e:
             logger.error(f"Error parsing JSON response: {e}")
-            return {
-                "flaws": "Error parsing flaws.",
-                "rating": "Error parsing rating.",
-                "conclusion": "Error parsing conclusion."
-            }
+            raise HTTPException(status_code=422, detail="The analysis could not be completed. Please try again.")
 
     def __analyze_files(self) -> None:
+        if not self.__files_contents:
+            raise HTTPException(status_code=404, detail="No files available for analysis. Please check the repository.")
+
         for content in self.__files_contents:
             self.project_files.append(content.filename)
             logger.info(f"Analyzing file: {content.filename}")
@@ -96,7 +99,8 @@ class GPTCandidateAnalyzer:
 
                 except Exception as e:
                     logger.error(f"Error analyzing part {part_index} of file {content.filename}: {e}")
-                    continue
+                    raise HTTPException(status_code=500,
+                                        detail="An error occurred while analyzing the file. Please try again.")
 
         logger.info("File analysis completed.")
 
@@ -125,6 +129,7 @@ class GPTCandidateAnalyzer:
 
         except Exception as e:
             logger.error(f"Error generating final report: {e}")
+            raise HTTPException(status_code=500, detail="An error occurred while generating the final report.")
 
     def __start(self) -> None:
         self.__analyze_files()

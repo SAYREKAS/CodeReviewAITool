@@ -22,6 +22,7 @@ def fetch_files_from_the_specified_repository(github_repo_url: str):
     path="/review",
     tags=["Code review AI tool"],
     response_model=AnalysisReport,
+    responses={404: {"model": ErrorResponse}},
 )
 def review(assignment_description: str, github_repo_url: str, candidate_level: CandidateLevel) -> AnalysisReport:
     file_contents = get_repository_files(github_repo_url)
