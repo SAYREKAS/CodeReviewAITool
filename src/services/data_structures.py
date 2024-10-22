@@ -27,3 +27,13 @@ class AnalysisReport(BaseModel):
     project_files: list[str]
     full_report: str
     conclusion_and_assessment: str
+
+
+class ReviewRequest(BaseModel):
+    assignment_description: str
+    github_repo_url: str
+    candidate_level: CandidateLevel
+
+
+class FilesRequest(BaseModel):
+    github_repo_url: str
