@@ -1,11 +1,21 @@
+# CodeReviewAITool
+
+This project is a web application designed to facilitate code reviews and analysis for developers.
+It leverages GitHub’s API to fetch repository files, analyze code quality, and provide insights based on specific
+criteria.
+The system is built using Python with FastAPI as the web framework, and the project dependencies are managed with
+Poetry.
+The goal is to streamline the code review process, making it easier for developers to maintain high-quality code
+standards.
+
 # Instructions for Running the Dockerized Application
 
 This document provides instructions on how to build and run the application using Docker Compose.
 
 ## Prerequisites
 
- - Ensure that Docker and Docker Compose are installed on your system.
- - You will need your GITHUB_ACCESS_TOKEN and OPENAI_API_KEY.
+- Ensure that Docker and Docker Compose are installed on your system.
+- You will need your GITHUB_ACCESS_TOKEN and OPENAI_API_KEY.
 
 ## Instructions
 
@@ -24,7 +34,9 @@ cd CodeReviewAITool
 ````
 
 ### 2. Docker Compose Configuration
-In this directory, create a new file named docker-compose.yml. You can use a text editor such as nano, vim, or any graphical text editor:
+
+In this directory, create a new file named docker-compose.yml. You can use a text editor such as nano, vim, or any
+graphical text editor:
 
 ```bash
 touch docker-compose.yml
