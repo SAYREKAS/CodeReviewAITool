@@ -1,8 +1,9 @@
 [tool.poetry]
-name = "requirements"
+name = "src"
 version = "0.1.0"
-description = ""
+description = "CodeReviewAITool"
 authors = ["sayrekas <chaotichoice@gmail.com>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.12"
