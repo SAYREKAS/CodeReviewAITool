@@ -1,17 +1,14 @@
 # Instructions for Running the Dockerized Application
 
----
 This document provides instructions on how to build and run the application using Docker Compose.
 
 ## Prerequisites
 
----
  - Ensure that Docker and Docker Compose are installed on your system.
  - You will need your GITHUB_ACCESS_TOKEN and OPENAI_API_KEY.
 
 ## Instructions
 
----
 ### 1. Clone the Repository
 
 Open a terminal (or command prompt), and execute the following command to clone the repository to your local machine:
@@ -97,6 +94,5 @@ docker compose down
 
 ## Additional Notes
 
----
 	•	If port 8001 is already in use, you can choose another port by modifying the ports section in the docker-compose.yml file. For example, change "8001:8000" to "8888:8000" to use port 8888 on your computer.
 	•	Make sure that Redis is running correctly. If you encounter issues with the application, check the Redis logs for more information.
