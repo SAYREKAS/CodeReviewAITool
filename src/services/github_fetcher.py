@@ -8,12 +8,12 @@ from fastapi import HTTPException
 
 from src.services.data_structures import RepoFilesResponse, Content
 
+logger.remove()
+logger.add(sink=lambda msg: print(msg, end=""), colorize=True)
+
 load_dotenv()
 
 GITHUB_API_URL = "https://api.github.com"
-
-logger.remove()
-logger.add(sink=lambda msg: print(msg, end=""), colorize=True)
 
 GITHUB_TOKEN = os.getenv('GITHUB_ACCESS_TOKEN')
 HEADERS = {
