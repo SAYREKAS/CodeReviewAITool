@@ -10,6 +10,9 @@ from src.services.data_structures import CandidateLevel, AnalysisReport, RepoFil
 
 load_dotenv()
 
+logger.remove()
+logger.add(sink=lambda msg: print(msg, end=""), colorize=True)
+
 
 class GPTCandidateAnalyzer:
     __CLIENT = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
