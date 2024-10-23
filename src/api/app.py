@@ -14,7 +14,7 @@ app = FastAPI()
     response_model=RepoFilesResponse,
     responses={404: {"model": ErrorResponse}},
 )
-def fetch_files_from_the_specified_repository(request: FilesRequest) -> RepoFilesResponse:
+async def fetch_files_from_the_specified_repository(request: FilesRequest) -> RepoFilesResponse:
     """
     Fetch files from the specified GitHub repository.
 
@@ -27,7 +27,7 @@ def fetch_files_from_the_specified_repository(request: FilesRequest) -> RepoFile
     Raises:
         HTTPException: If the repository URL is invalid or no files are found.
     """
-    return get_repository_files(request.github_repo_url)
+    return await get_repository_files(request.github_repo_url)
 
 
 @app.post(
@@ -36,7 +36,7 @@ def fetch_files_from_the_specified_repository(request: FilesRequest) -> RepoFile
     response_model=AnalysisReport,
     responses={404: {"model": ErrorResponse}},
 )
-def review(request: ReviewRequest) -> AnalysisReport:
+async def review(request: ReviewRequest) -> AnalysisReport:
     """
     Perform code review analysis on the specified GitHub repository.
 
@@ -50,7 +50,7 @@ def review(request: ReviewRequest) -> AnalysisReport:
     Raises:
         HTTPException: If no repository files are found or other errors occur during analysis.
     """
-    file_contents = get_repository_files(request.github_repo_url)
+    file_contents = await get_repository_files(request.github_repo_url)
     if not file_contents:
         raise HTTPException(status_code=404, detail="No repository files found")
 
